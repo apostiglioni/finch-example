@@ -1,3 +1,3 @@
-package io.finch.example.todo.types
+package io.finch.example.rest.types
 
 case class LinkResource(rel: String, href: String)

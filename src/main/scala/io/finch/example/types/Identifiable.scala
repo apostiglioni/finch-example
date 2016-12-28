@@ -1,4 +1,4 @@
-package io.finch.example.todo.types
+package io.finch.example.types
 
 import java.util.UUID
 

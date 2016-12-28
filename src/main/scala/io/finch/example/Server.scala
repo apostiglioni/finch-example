@@ -1,19 +1,20 @@
 package io.finch.example
 
+import cats.~>
 import com.twitter.finagle.Http
-import com.twitter.util.Await
+import com.twitter.util.{Await, Future}
 import io.circe.generic.auto._
 import io.finch.Application
 import io.finch.circe._
+import io.finch.example.log.dsl.interpreters.PrintInterpreter
+import io.finch.example.todo.crud.interpreters.H2CrudInterpreter
 import io.finch.example.todo.endpoints
+import io.finch.example.types.DSL
 
 object Server extends App {
-  val services = ( endpoints.filter
-               :+: endpoints.get
-               :+: endpoints.put
-               :+: endpoints.post
-               :+: endpoints.delete
-               ).toServiceAs[Application.Json]
+
+  val interpreter: DSL ~> Future = new H2CrudInterpreter("h2mem") or PrintInterpreter
+  val services = endpoints.all("http://localhost:8081")(interpreter).toServiceAs[Application.Json]
 
   Await.ready(Http.server.serve(":8081", services))
 }
